@@ -103,6 +103,7 @@ public class Prim {
         graph.primMST();
 
         long endTime = System.nanoTime();
-        System.out.println("Running time: " + (endTime - startTime) + " nanoseconds");
+        long durationInMilliseconds = (endTime - startTime) / 1_000_000;
+        System.out.println("Running time: " + durationInMilliseconds + " milliseconds");
     }
 }
