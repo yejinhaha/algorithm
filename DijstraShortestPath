@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <limits.h>
+#include <stdbool.h>
+
+#define INF INT_MAX
+#define V 10 // 노드 수 (서울, 천안, 논산, 광주, 대전, 원주, 강릉, 포항, 대구, 부산)
+#define E 14 // 간선 수
+
+int dist[V]; // 최단 거리 배열
+bool visited[V]; // 방문 여부 배열
+int graph[V][V]; // 인접 행렬 그래프 초기화
+
+// 간선 리스트 초기화
+int edges[E][3] = {
+    {0, 1, 12}, {0, 5, 15}, {1, 2, 4}, {1, 4, 10},
+    {2, 3, 13}, {2, 4, 3},{3,9,15} ,{ 4, 8, 10 }, {5, 6, 21},{5,8,7},{6,7,25}, { 7, 8, 19 },{8, 9, 9}, {7, 9, 5}
+};
+
+// 그래프 초기화 함수
+void initializeGraph() {
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (i == j) {
+                graph[i][j] = 0;
+            }
+            else {
+                graph[i][j] = INF;
+            }
+        }
+    }
+
+    for (int i = 0; i < E; i++) {
+        int u = edges[i][0];
+        int v = edges[i][1];
+        int w = edges[i][2];
+        graph[u][v] = w;
+        graph[v][u] = w; // 무방향 그래프인 경우
+    }
+}
+
+// 방문하지 않은 노드 중 최단 거리 노드 찾기
+int findSmallestNode() {
+    int min_dist = INF;
+    int min_idx = -1;
+    for (int i = 0; i < V; i++) {
+        if (!visited[i] && dist[i] < min_dist) {
+            min_dist = dist[i];
+            min_idx = i;
+        }
+    }
+    return min_idx;
+}
+
+// 다익스트라 알고리즘
+void dijkstra(int start) {
+    for (int i = 0; i < V; i++) {
+        dist[i] = INF;
+        visited[i] = false;
+    }
+    dist[start] = 0;
+
+    for (int i = 0; i < V - 1; i++) {
+        int u = findSmallestNode();
+        if (u == -1) break;
+        visited[u] = true;
+
+        for (int v = 0; v < V; v++) {
+            if (!visited[v] && graph[u][v] != INF && dist[u] != INF && dist[u] + graph[u][v] < dist[v]) {
+                dist[v] = dist[u] + graph[u][v];
+            }
+        }
+    }
+}
+
+// 결과 출력 함수
+void printResults() {
+    printf("최단 거리 결과:\n");
+    printf("        서울    천안    논산    광주    대전    원주    강릉    포항    대구    부산\n");
+    printf("서울 ");
+    for (int i = 0; i < V; i++) {
+        if (dist[i] == INF)
+            printf("   INF ");
+        else
+            printf("%7d ", dist[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    initializeGraph(); // 그래프 초기화
+    dijkstra(0);       // 서울을 시작 노드로 다익스트라 실행
+    printResults();    // 결과 출력
+    return 0;
+}
